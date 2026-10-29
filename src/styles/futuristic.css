@@ -1,0 +1,1008 @@
+/* ============================================================================
+ * FUTURISTIC COSMIC, BORDER-BEAM & CURSOR-SPOTLIGHT DESIGN SYSTEM
+ * Covers:
+ *   1. @property --beam-angle animated rotating conic border-beams
+ *   2. .liquid-glass & .btn-hero-secondary (exact spec + beam & shimmer)
+ *   3. 60fps Cursor-Tracking Radial Spotlight + Border-Edge Glow on Cards
+ *   4. .futuristic-public-shell, .cosmic-auth-stage, .portal-theme-cosmic
+ * ========================================================================== */
+
+@property --beam-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateBorderBeam {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+@keyframes btnShimmerSweep {
+  0% {
+    transform: translateX(-140%) skewX(-22deg);
+  }
+  100% {
+    transform: translateX(240%) skewX(-22deg);
+  }
+}
+
+:root {
+  --cosmic-bg-hsl: 260 87% 3%;
+  --cosmic-fg-hsl: 40 6% 95%;
+  --cosmic-sub-hsl: 40 6% 82%;
+
+  --cosmic-bg: hsl(260, 87%, 3%);
+  --cosmic-fg: hsl(40, 6%, 95%);
+  --cosmic-sub: hsl(40, 6%, 82%);
+  --font-headline: 'General Sans', 'Geist Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-geist: 'Geist Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Exact Liquid Glass Utility Class from Specification */
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.15) 20%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.15) 80%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ============================================================================
+ * ANIMATED ROTATING BORDER-BEAM + SHIMMER HERO BUTTON (.btn-hero-secondary)
+ * ========================================================================== */
+.btn-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 9999px;
+  color: hsl(40, 6%, 95%);
+  font-family: var(--font-geist);
+  font-weight: 500;
+  font-size: 0.94rem;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  text-decoration: none;
+  background:
+    radial-gradient(
+      120px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(168, 85, 247, 0.22),
+      transparent 70%
+    ),
+    rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.16), 0 8px 28px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.22s ease,
+    box-shadow 0.22s ease,
+    color 0.22s ease;
+}
+
+/* Continuous 360-degree Conic Border-Beam + Liquid-Glass Rim */
+.btn-hero-secondary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--beam-angle),
+    rgba(255, 255, 255, 0.16) 0%,
+    #6366f1 22%,
+    #a855f7 36%,
+    #fcd34d 48%,
+    rgba(255, 255, 255, 0.18) 62%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: rotateBorderBeam 3.8s linear infinite;
+}
+
+/* Diagonal Specular Light-Sweep Shimmer on Hover */
+.btn-hero-secondary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.34) 50%,
+    transparent 75%
+  );
+  transform: translateX(-140%) skewX(-22deg);
+  pointer-events: none;
+}
+
+.btn-hero-secondary:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.28),
+    0 12px 36px rgba(168, 85, 247, 0.34),
+    0 0 22px rgba(99, 102, 241, 0.26);
+}
+
+.btn-hero-secondary:hover::after {
+  animation: btnShimmerSweep 0.72s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-hero-secondary:active {
+  transform: translateY(0) scale(0.985);
+}
+
+/* Topbar 1-Click Theme Switcher Pill (Cosmic Dark <-> Daylight) */
+.theme-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: 9999px;
+  font-family: var(--font-geist);
+  font-size: 0.79rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-toggle-pill:hover {
+  transform: translateY(-1px);
+  border-color: #94a3b8;
+}
+
+.portal-theme-cosmic .theme-toggle-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: hsl(40, 6%, 95%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.portal-theme-cosmic .theme-toggle-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(168, 85, 247, 0.55);
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.25);
+}
+
+/* Adaptive Exam Option Card (Light & Cosmic Modes) */
+.exam-option-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: var(--text-primary);
+  font-weight: 500;
+  transition: border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease,
+    transform 0.16s ease;
+}
+
+.exam-option-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateX(2px);
+}
+
+.exam-option-card.selected {
+  background: #eff6ff;
+  border: 2px solid var(--accent-primary);
+  font-weight: 700;
+}
+
+.portal-theme-cosmic .exam-option-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  color: hsl(40, 6%, 95%);
+}
+
+.portal-theme-cosmic .exam-option-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(168, 85, 247, 0.55);
+}
+
+.portal-theme-cosmic .exam-option-card.selected {
+  background: rgba(168, 85, 247, 0.16);
+  border: 2px solid #a855f7;
+  box-shadow: 0 0 22px rgba(168, 85, 247, 0.2);
+}
+
+/* Top Futuristic Navbar Controls */
+.cosmic-nav-item {
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  color: hsla(40, 6%, 95%, 0.9);
+  font-family: var(--font-geist);
+  font-size: 0.92rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+.cosmic-nav-item:hover,
+.cosmic-nav-item.active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cosmic-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 250px;
+  padding: 8px;
+  border-radius: 16px;
+  background: rgba(11, 5, 24, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7);
+  z-index: 60;
+  animation: slideFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cosmic-dropdown-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: hsla(40, 6%, 95%, 0.88);
+  font-size: 0.86rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.cosmic-dropdown-link:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+}
+
+/* Seamless 20s Linear Infinite Hero Marquee */
+@keyframes heroMarquee20s {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.hero-marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  gap: 64px;
+  animation: heroMarquee20s 20s linear infinite;
+}
+
+.hero-marquee-viewport:hover .hero-marquee-track {
+  animation-play-state: paused;
+}
+
+/* ============================================================================
+ * SHARED COSMIC SURFACE + CURSOR-TRACKING SPOTLIGHT SYSTEM
+ * ========================================================================== */
+.futuristic-public-shell,
+.cosmic-auth-stage,
+.portal-shell.portal-theme-cosmic {
+  --bg-canvas: hsl(260, 87%, 3%);
+  --bg-canvas-alt: #0b0318;
+  --surface-raised: rgba(17, 10, 34, 0.78);
+  --surface-pure: rgba(16, 9, 32, 0.76);
+  --surface-inset: rgba(255, 255, 255, 0.035);
+
+  --text-primary: hsl(40, 6%, 95%);
+  --text-body: hsl(40, 6%, 84%);
+  --text-muted: hsla(40, 6%, 82%, 0.68);
+
+  --accent-primary: #a855f7;
+  --accent-hover: #c084fc;
+  --accent-secondary: #6366f1;
+  --accent-soft: rgba(168, 85, 247, 0.15);
+  --accent-border: rgba(168, 85, 247, 0.35);
+
+  --status-success-text: #6ee7b7;
+  --status-warn-text: #fde68a;
+  --status-danger-text: #fca5a5;
+  --status-info-text: #e0e7ff;
+  --text-success-strong: #4ade80;
+  --text-danger-strong: #f87171;
+
+  background-color: hsl(260, 87%, 3%);
+  background-image:
+    radial-gradient(circle at 16% 10%, rgba(99, 102, 241, 0.11) 0%, transparent 40%),
+    radial-gradient(circle at 84% 12%, rgba(168, 85, 247, 0.09) 0%, transparent 38%),
+    radial-gradient(circle at 50% 92%, rgba(252, 211, 77, 0.04) 0%, transparent 45%);
+  color: hsl(40, 6%, 84%);
+  font-family: var(--font-geist);
+}
+
+.futuristic-public-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.cosmic-auth-stage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.futuristic-public-shell h1,
+.futuristic-public-shell h2,
+.futuristic-public-shell h3,
+.futuristic-public-shell h4,
+.cosmic-auth-stage h1,
+.cosmic-auth-stage h2,
+.cosmic-auth-stage h3,
+.portal-theme-cosmic h1,
+.portal-theme-cosmic h2,
+.portal-theme-cosmic h3,
+.portal-theme-cosmic h4 {
+  font-family: var(--font-headline);
+  color: hsl(40, 6%, 95%);
+}
+
+.futuristic-public-shell a,
+.cosmic-auth-stage a,
+.portal-theme-cosmic a {
+  color: #c4b5fd;
+}
+
+.futuristic-public-shell a:hover,
+.cosmic-auth-stage a:hover,
+.portal-theme-cosmic a:hover {
+  color: #fcd34d;
+}
+
+/* ============================================================================
+ * CURSOR-REACTIVE SPOTLIGHT CARDS & LUMINOUS BORDER TRACKING
+ * ========================================================================== */
+.futuristic-public-shell .neu-card,
+.futuristic-public-shell .neu-card-compact,
+.cosmic-auth-stage .neu-card,
+.cosmic-auth-stage .neu-card-compact,
+.portal-theme-cosmic .neu-card,
+.portal-theme-cosmic .neu-card-compact {
+  position: relative;
+  background: rgba(255, 255, 255, 0.028);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    0 20px 50px -16px rgba(0, 0, 0, 0.68);
+  color: hsl(40, 6%, 84%);
+}
+
+/* Interior Radial Cursor Spotlight on Hover */
+.futuristic-public-shell .neu-card:hover,
+.futuristic-public-shell .neu-card-compact:hover,
+.cosmic-auth-stage .neu-card:hover,
+.portal-theme-cosmic .neu-card:hover,
+.portal-theme-cosmic .neu-card-compact:hover {
+  background:
+    radial-gradient(
+      460px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(168, 85, 247, 0.12),
+      rgba(99, 102, 241, 0.05) 42%,
+      transparent 74%
+    ),
+    rgba(255, 255, 255, 0.032);
+}
+
+/* Luminous Cursor-Following Border Highlight (21st.dev / Linear style) */
+.futuristic-public-shell .neu-card::after,
+.futuristic-public-shell .kpi-card::after,
+.futuristic-public-shell .showcase-card-btn::after,
+.cosmic-auth-stage .neu-card::after,
+.portal-theme-cosmic .kpi-card::after,
+.portal-theme-cosmic .neu-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.35px;
+  background: radial-gradient(
+    280px circle at var(--spot-x, -999px) var(--spot-y, -999px),
+    rgba(252, 211, 77, 0.72),
+    rgba(168, 85, 247, 0.68) 40%,
+    rgba(99, 102, 241, 0.35) 68%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.futuristic-public-shell .neu-card:hover::after,
+.futuristic-public-shell .kpi-card:hover::after,
+.futuristic-public-shell .showcase-card-btn:hover::after,
+.cosmic-auth-stage .neu-card:hover::after,
+.portal-theme-cosmic .kpi-card:hover::after,
+.portal-theme-cosmic .neu-card:hover::after {
+  opacity: 1;
+}
+
+.futuristic-public-shell .kpi-card::before,
+.portal-theme-cosmic .kpi-card::before {
+  background: linear-gradient(90deg, #6366f1, #a855f7, #fcd34d);
+}
+
+.portal-theme-cosmic .kpi-card:hover {
+  border-color: rgba(168, 85, 247, 0.38);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.14),
+    0 18px 40px -12px rgba(168, 85, 247, 0.24);
+}
+
+.futuristic-public-shell .kpi-icon-box,
+.portal-theme-cosmic .kpi-icon-box {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+  border: 1px solid rgba(168, 85, 247, 0.34);
+  color: #fcd34d;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s ease;
+}
+
+.kpi-card:hover .kpi-icon-box {
+  transform: scale(1.08) rotate(-3deg);
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.3);
+}
+
+.futuristic-public-shell .neu-panel-inset,
+.cosmic-auth-stage .neu-panel-inset,
+.portal-theme-cosmic .neu-panel-inset {
+  background: rgba(255, 255, 255, 0.032);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: hsl(40, 6%, 88%);
+}
+
+.futuristic-public-shell .neu-panel-inset:hover,
+.portal-theme-cosmic .neu-panel-inset:hover {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(168, 85, 247, 0.34);
+}
+
+/* Cosmic Portal Sidebar & Topbar */
+.portal-theme-cosmic .portal-sidebar {
+  background: rgba(10, 3, 22, 0.88);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-right: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.portal-theme-cosmic .sidebar-section-label {
+  color: hsla(40, 6%, 82%, 0.45);
+}
+
+.portal-theme-cosmic .sidebar-nav-link {
+  color: hsla(40, 6%, 95%, 0.76);
+}
+
+.portal-theme-cosmic .sidebar-nav-link:hover {
+  background: rgba(255, 255, 255, 0.055);
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.portal-theme-cosmic .sidebar-nav-link.active {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.18), rgba(168, 85, 247, 0.12));
+  color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.portal-theme-cosmic .sidebar-nav-link.active::before {
+  background: linear-gradient(180deg, #6366f1, #a855f7, #fcd34d);
+}
+
+.portal-theme-cosmic .portal-topbar {
+  background: rgba(9, 3, 20, 0.78);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.portal-theme-cosmic .user-avatar-chip {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 60%, #f59e0b 125%);
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+}
+
+/* Cosmic Data Tables */
+.portal-theme-cosmic .neu-table-surface {
+  background: rgba(14, 6, 28, 0.72);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 40px -15px rgba(0, 0, 0, 0.65);
+}
+
+.portal-theme-cosmic .data-table th {
+  background: rgba(255, 255, 255, 0.04);
+  color: hsla(40, 6%, 95%, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.portal-theme-cosmic .data-table td {
+  color: hsl(40, 6%, 86%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.portal-theme-cosmic .data-table tbody tr:hover td {
+  background: rgba(168, 85, 247, 0.075);
+}
+
+/* Cosmic Modals */
+.portal-theme-cosmic .modal-backdrop {
+  background: rgba(3, 1, 9, 0.74);
+  backdrop-filter: blur(10px);
+}
+
+.portal-theme-cosmic .modal-card {
+  background: linear-gradient(160deg, rgba(19, 10, 38, 0.96) 0%, rgba(11, 4, 24, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12),
+    0 28px 70px rgba(0, 0, 0, 0.8);
+  color: hsl(40, 6%, 88%);
+}
+
+.portal-theme-cosmic code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 5px;
+  color: #fcd34d;
+}
+
+/* Public Hero Stage & Interactive 6-Domain Spotlight Cards */
+.futuristic-public-shell .hero-stage {
+  background: radial-gradient(ellipse at top right, rgba(99, 102, 241, 0.16), rgba(12, 4, 26, 0.88) 65%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 28px 64px -16px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.futuristic-public-shell .hero-stage::before {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+
+.futuristic-public-shell .hero-visual-frame {
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.futuristic-public-shell .showcase-card-btn {
+  background: rgba(255, 255, 255, 0.022);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 30px rgba(0, 0, 0, 0.45);
+  color: hsl(40, 6%, 95%);
+}
+
+.futuristic-public-shell .showcase-card-btn:hover {
+  transform: translateY(-5px);
+  background:
+    radial-gradient(
+      380px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(168, 85, 247, 0.16),
+      rgba(99, 102, 241, 0.06) 45%,
+      transparent 75%
+    ),
+    rgba(255, 255, 255, 0.032);
+  border-color: rgba(168, 85, 247, 0.45);
+  box-shadow: 0 20px 44px -10px rgba(168, 85, 247, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.futuristic-public-shell .showcase-card-btn.selected {
+  background: linear-gradient(165deg, rgba(99, 102, 241, 0.16) 0%, rgba(168, 85, 247, 0.09) 100%);
+  border: 1.5px solid #a855f7;
+  box-shadow: 0 18px 44px -10px rgba(168, 85, 247, 0.34), 0 0 0 3px rgba(168, 85, 247, 0.14);
+}
+
+.futuristic-public-shell .domain-emblem {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.14), 0 6px 16px rgba(0, 0, 0, 0.35) !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.futuristic-public-shell .showcase-card-btn:hover .domain-emblem {
+  transform: scale(1.07);
+  border-color: rgba(252, 211, 77, 0.45) !important;
+}
+
+.futuristic-public-shell .domain-stage-graphic {
+  background:
+    radial-gradient(
+      420px circle at var(--spot-x, 70%) var(--spot-y, 30%),
+      rgba(168, 85, 247, 0.14),
+      transparent 70%
+    ),
+    linear-gradient(155deg, rgba(16, 8, 34, 0.85) 0%, rgba(30, 15, 58, 0.65) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================================
+ * FUTURISTIC BORDER-BEAM + SHIMMER BUTTONS (Public, Auth & Cosmic Portals)
+ * ========================================================================== */
+.futuristic-public-shell .btn-primary,
+.cosmic-auth-stage .btn-primary,
+.portal-theme-cosmic .btn-primary {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #4f46e5 0%, #7e22ce 60%, #b45309 145%);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  box-shadow: 0 8px 26px -4px rgba(147, 51, 234, 0.48), inset 0 1px 1px rgba(255, 255, 255, 0.28);
+}
+
+/* Rotating Conic Border-Beam Rim on Primary Buttons */
+.futuristic-public-shell .btn-primary::before,
+.cosmic-auth-stage .btn-primary::before,
+.portal-theme-cosmic .btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--beam-angle),
+    rgba(255, 255, 255, 0.22) 0%,
+    #818cf8 25%,
+    #e879f9 45%,
+    #fcd34d 58%,
+    rgba(255, 255, 255, 0.22) 78%,
+    rgba(255, 255, 255, 0.14) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: rotateBorderBeam 3.4s linear infinite;
+}
+
+/* Diagonal Specular Sweep on Primary Button Hover */
+.futuristic-public-shell .btn-primary::after,
+.cosmic-auth-stage .btn-primary::after,
+.portal-theme-cosmic .btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 24%,
+    rgba(255, 255, 255, 0.36) 50%,
+    transparent 76%
+  );
+  transform: translateX(-140%) skewX(-22deg);
+  pointer-events: none;
+}
+
+.futuristic-public-shell .btn-primary:hover:not(:disabled),
+.cosmic-auth-stage .btn-primary:hover:not(:disabled),
+.portal-theme-cosmic .btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6366f1 0%, #9333ea 58%, #d97706 135%);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px -4px rgba(168, 85, 247, 0.6), 0 0 18px rgba(252, 211, 77, 0.2);
+}
+
+.futuristic-public-shell .btn-primary:hover:not(:disabled)::after,
+.cosmic-auth-stage .btn-primary:hover:not(:disabled)::after,
+.portal-theme-cosmic .btn-primary:hover:not(:disabled)::after {
+  animation: btnShimmerSweep 0.72s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.futuristic-public-shell .btn-secondary,
+.cosmic-auth-stage .btn-secondary,
+.portal-theme-cosmic .btn-secondary {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      110px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(168, 85, 247, 0.2),
+      transparent 75%
+    ),
+    rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(8px);
+  color: hsl(40, 6%, 95%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.futuristic-public-shell .btn-secondary:hover:not(:disabled),
+.cosmic-auth-stage .btn-secondary:hover:not(:disabled),
+.portal-theme-cosmic .btn-secondary:hover:not(:disabled) {
+  background:
+    radial-gradient(
+      130px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(168, 85, 247, 0.28),
+      transparent 75%
+    ),
+    rgba(255, 255, 255, 0.09);
+  border-color: rgba(192, 132, 252, 0.5);
+  color: #ffffff;
+  box-shadow: 0 8px 22px -6px rgba(168, 85, 247, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.portal-theme-cosmic .btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  border: 1px solid rgba(248, 113, 113, 0.32);
+  border-radius: 9999px;
+}
+
+.portal-theme-cosmic .btn-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.22);
+  border-color: rgba(248, 113, 113, 0.55);
+  color: #fecaca;
+  box-shadow: 0 8px 20px -6px rgba(239, 68, 68, 0.32);
+}
+
+/* Cosmic Form Controls */
+.futuristic-public-shell .neu-input,
+.futuristic-public-shell .neu-select,
+.futuristic-public-shell .neu-textarea,
+.cosmic-auth-stage .neu-input,
+.cosmic-auth-stage .neu-select,
+.cosmic-auth-stage .neu-textarea,
+.portal-theme-cosmic .neu-input,
+.portal-theme-cosmic .neu-select,
+.portal-theme-cosmic .neu-textarea {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: hsl(40, 6%, 95%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.futuristic-public-shell .neu-select option,
+.cosmic-auth-stage .neu-select option,
+.portal-theme-cosmic .neu-select option {
+  background: #0d051d;
+  color: hsl(40, 6%, 95%);
+}
+
+.futuristic-public-shell .neu-input::placeholder,
+.futuristic-public-shell .neu-textarea::placeholder,
+.cosmic-auth-stage .neu-input::placeholder,
+.cosmic-auth-stage .neu-textarea::placeholder,
+.portal-theme-cosmic .neu-input::placeholder,
+.portal-theme-cosmic .neu-textarea::placeholder {
+  color: hsla(40, 6%, 82%, 0.45);
+}
+
+.futuristic-public-shell .neu-input:focus,
+.futuristic-public-shell .neu-select:focus,
+.futuristic-public-shell .neu-textarea:focus,
+.cosmic-auth-stage .neu-input:focus,
+.cosmic-auth-stage .neu-select:focus,
+.cosmic-auth-stage .neu-textarea:focus,
+.portal-theme-cosmic .neu-input:focus,
+.portal-theme-cosmic .neu-select:focus,
+.portal-theme-cosmic .neu-textarea:focus {
+  background: rgba(255, 255, 255, 0.075);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.24), 0 0 18px rgba(168, 85, 247, 0.18);
+}
+
+/* Cosmic Badges & Alerts */
+.futuristic-public-shell .badge-info,
+.cosmic-auth-stage .badge-info,
+.portal-theme-cosmic .badge-info {
+  background: rgba(99, 102, 241, 0.18);
+  color: #e0e7ff;
+  border: 1px solid rgba(168, 85, 247, 0.38);
+}
+
+.futuristic-public-shell .badge-neutral,
+.cosmic-auth-stage .badge-neutral,
+.portal-theme-cosmic .badge-neutral {
+  background: rgba(255, 255, 255, 0.065);
+  color: hsla(40, 6%, 95%, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.futuristic-public-shell .badge-success,
+.cosmic-auth-stage .badge-success,
+.portal-theme-cosmic .badge-success {
+  background: rgba(16, 185, 129, 0.16);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.futuristic-public-shell .badge-warn,
+.cosmic-auth-stage .badge-warn,
+.portal-theme-cosmic .badge-warn {
+  background: rgba(245, 158, 11, 0.16);
+  color: #fde68a;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.futuristic-public-shell .badge-danger,
+.cosmic-auth-stage .badge-danger,
+.portal-theme-cosmic .badge-danger {
+  background: rgba(239, 68, 68, 0.16);
+  color: #fca5a5;
+  border: 1px solid rgba(248, 113, 113, 0.38);
+}
+
+.futuristic-public-shell .alert-error,
+.cosmic-auth-stage .alert-error,
+.portal-theme-cosmic .alert-error {
+  background: rgba(239, 68, 68, 0.14);
+  color: #fecaca;
+  border: 1px solid rgba(248, 113, 113, 0.38);
+}
+
+.futuristic-public-shell .alert-success,
+.cosmic-auth-stage .alert-success,
+.portal-theme-cosmic .alert-success {
+  background: rgba(16, 185, 129, 0.14);
+  color: #a7f3d0;
+  border: 1px solid rgba(52, 211, 153, 0.38);
+}
+
+.futuristic-public-shell .alert-warn,
+.cosmic-auth-stage .alert-warn,
+.portal-theme-cosmic .alert-warn {
+  background: rgba(245, 158, 11, 0.14);
+  color: #fde68a;
+  border: 1px solid rgba(251, 191, 36, 0.38);
+}
+
+.futuristic-public-shell .alert-info,
+.cosmic-auth-stage .alert-info,
+.portal-theme-cosmic .alert-info {
+  background: rgba(99, 102, 241, 0.16);
+  color: #e0e7ff;
+  border: 1px solid rgba(168, 85, 247, 0.38);
+}
+
+/* Cosmic Public Footer */
+.futuristic-public-shell .public-footer {
+  background: rgba(6, 1, 15, 0.92);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.futuristic-public-shell .public-footer::before {
+  background: linear-gradient(90deg, transparent, #6366f1, #a855f7, #fcd34d, transparent);
+  height: 1px;
+}
+
+/* Daylight Mode Shimmer & Spotlight Enhancements */
+.portal-shell:not(.portal-theme-cosmic) .btn-primary {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+}
+
+.portal-shell:not(.portal-theme-cosmic) .btn-secondary,
+.portal-shell:not(.portal-theme-cosmic) .btn-danger {
+  border-radius: 9999px;
+}
+
+.portal-shell:not(.portal-theme-cosmic) .btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 24%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 76%
+  );
+  transform: translateX(-140%) skewX(-22deg);
+  pointer-events: none;
+}
+
+.portal-shell:not(.portal-theme-cosmic) .btn-primary:hover:not(:disabled)::after {
+  animation: btnShimmerSweep 0.72s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portal-shell:not(.portal-theme-cosmic) .neu-card:hover,
+.portal-shell:not(.portal-theme-cosmic) .neu-card-compact:hover {
+  background:
+    radial-gradient(
+      420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(37, 99, 235, 0.055),
+      rgba(6, 182, 212, 0.03) 45%,
+      transparent 75%
+    ),
+    #ffffff;
+}
+
+@media (max-width: 900px) {
+  .cosmic-desktop-nav {
+    display: none !important;
+  }
+  .cosmic-mobile-toggle {
+    display: inline-flex !important;
+  }
+  .hero-marquee-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 20px !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .portal-theme-cosmic .portal-sidebar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+@media (max-width: 640px) {
+  .portal-topbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+  .portal-content {
+    padding: 16px 14px 32px;
+  }
+  .modal-backdrop {
+    padding: 12px;
+  }
+  .modal-card {
+    padding: 20px 16px;
+    max-height: 92vh;
+  }
+  .neu-card,
+  .neu-card-compact {
+    padding: 18px 16px;
+  }
+}
+
