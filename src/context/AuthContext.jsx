@@ -25,12 +25,20 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     refreshSession();
     const onUnauth = () => setUser(null);
+    const onStorage = (e) => {
+      if (e.key === 'aisquare_session_token' && !e.newValue) {
+        clearStoredSessionToken();
+        setUser(null);
+      }
+    };
     if (typeof window !== 'undefined') {
       window.addEventListener('aisquare:unauthenticated', onUnauth);
+      window.addEventListener('storage', onStorage);
     }
     return () => {
       if (typeof window !== 'undefined') {
         window.removeEventListener('aisquare:unauthenticated', onUnauth);
+        window.removeEventListener('storage', onStorage);
       }
     };
   }, [refreshSession]);

@@ -5,7 +5,7 @@ export const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 const HEX_SESSION_RE = /^[a-f0-9]{64}$/i;
 
-function extractCandidateSessionTokens(req) {
+export function extractCandidateSessionTokens(req) {
   const candidates = [];
   const pushToken = (raw) => {
     if (typeof raw !== 'string') return;

@@ -167,11 +167,9 @@ textarea:focus-visible {
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -251,7 +249,7 @@ textarea:focus-visible {
 }
 
 .page-enter {
-  animation: pageEnter 0.36s var(--ease-spring) both;
+  animation: pageEnter 0.28s ease-out backwards;
 }
 
 .stagger-1 { animation-delay: 0.04s; }
@@ -1041,28 +1039,30 @@ textarea:focus-visible {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 80;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 20px;
-  animation: modalBackdropIn 0.2s ease both;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 36px 20px;
+  animation: modalBackdropIn 0.2s ease backwards;
 }
 
 .modal-card {
+  position: relative;
   width: 100%;
   max-width: 560px;
-  max-height: 90vh;
-  overflow-y: auto;
+  margin: auto 0;
   background: #ffffff;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(15, 23, 42, 0.1);
   box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.6);
   padding: 28px;
-  animation: modalCardSpringIn 0.28s var(--ease-spring) both;
+  animation: modalCardSpringIn 0.26s var(--ease-spring) backwards;
 }
 
 .portal-mobile-toggle {

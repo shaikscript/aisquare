@@ -36,6 +36,7 @@ import AdminQuestionBank from './pages/admin/AdminQuestionBank.jsx';
 import AdminResults from './pages/admin/AdminResults.jsx';
 import AdminReadiness from './pages/admin/AdminReadiness.jsx';
 import AdminApplications from './pages/admin/AdminApplications.jsx';
+import AdminCompanyInfo from './pages/admin/AdminCompanyInfo.jsx';
 import AdminAnnouncements from './pages/admin/AdminAnnouncements.jsx';
 import AdminActivity from './pages/admin/AdminActivity.jsx';
 
@@ -195,6 +196,7 @@ export default function App() {
               <Route path="question-bank" element={<AdminQuestionBank />} />
               <Route path="results" element={<AdminResults />} />
               <Route path="readiness" element={<AdminReadiness />} />
+              <Route path="company-info" element={<AdminCompanyInfo />} />
               <Route path="applications" element={<AdminApplications />} />
               <Route path="announcements" element={<AdminAnnouncements />} />
               <Route path="activity" element={<AdminActivity />} />

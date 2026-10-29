@@ -9,6 +9,7 @@ import db, {
 import {
   SESSION_COOKIE_NAME,
   SESSION_DURATION_MS,
+  extractCandidateSessionTokens,
   requireAuth,
 } from '../middleware/auth.js';
 import {
@@ -32,7 +33,46 @@ function isHttpsRequest(req) {
   return false;
 }
 
+function purgeRequestSessions(req) {
+  const tokens = extractCandidateSessionTokens(req);
+  if (tokens.length > 0) {
+    const delStmt = db.prepare('DELETE FROM sessions WHERE id = ?');
+    for (const t of tokens) {
+      delStmt.run(t);
+    }
+  }
+}
+
+function expireSessionCookies(req, res) {
+  const https = isHttpsRequest(req);
+  // Clear both partitioned and standard cookie variants so no browser/proxy retains a stale cookie
+  res.clearCookie(SESSION_COOKIE_NAME, {
+    path: '/',
+    httpOnly: true,
+    sameSite: https ? 'none' : 'lax',
+    secure: https,
+    partitioned: https,
+  });
+  res.append(
+    'Set-Cookie',
+    `${SESSION_COOKIE_NAME}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Lax`
+  );
+  if (https) {
+    res.append(
+      'Set-Cookie',
+      `${SESSION_COOKIE_NAME}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; HttpOnly; Secure; SameSite=None`
+    );
+    res.append(
+      'Set-Cookie',
+      `${SESSION_COOKIE_NAME}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; HttpOnly; Secure; SameSite=None; Partitioned`
+    );
+  }
+}
+
 function createUserSession(req, res, userId) {
+  // Always invalidate any previous session tokens attached to this browser request before issuing a new one
+  purgeRequestSessions(req);
+
   const token = generateSecureToken(32);
   const expiresAtIso = new Date(Date.now() + SESSION_DURATION_MS)
     .toISOString()
@@ -276,7 +316,8 @@ router.post('/admin/login', async (req, res) => {
 
 router.post('/logout', (req, res) => {
   if (req.user) {
-    db.prepare('DELETE FROM sessions WHERE id = ?').run(req.user.sessionId);
+    // Delete current session AND all active sessions for this user + any stale tokens in headers/cookies
+    db.prepare('DELETE FROM sessions WHERE user_id = ?').run(req.user.id);
     recordPortalActivity({
       userId: req.user.id,
       userIdentity: `${req.user.fullName} (${req.user.employeeCode})`,
@@ -285,13 +326,8 @@ router.post('/logout', (req, res) => {
       detail: 'Signed out of session',
     });
   }
-  const https = isHttpsRequest(req);
-  res.clearCookie(SESSION_COOKIE_NAME, {
-    path: '/',
-    sameSite: https ? 'none' : 'lax',
-    secure: https,
-    partitioned: https,
-  });
+  purgeRequestSessions(req);
+  expireSessionCookies(req, res);
   return res.json({ success: true });
 });
 

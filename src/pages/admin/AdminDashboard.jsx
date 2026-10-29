@@ -12,6 +12,7 @@ import {
   MessageSquare,
   AlertCircle,
   RefreshCw,
+  MapPin,
 } from 'lucide-react';
 import { apiRequest } from '../../utils/api.js';
 
@@ -70,6 +71,10 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Link to="/admin/company-info" className="btn btn-primary btn-sm">
+            <MapPin size={15} />
+            Contact, Email &amp; Map Settings
+          </Link>
           <Link to="/admin/admins" className="btn btn-secondary btn-sm">
             Manage Administrators ({data.admins?.active || 1})
           </Link>

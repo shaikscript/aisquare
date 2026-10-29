@@ -12,6 +12,7 @@ import {
   FileCheck2,
   CheckSquare,
   Megaphone,
+  MapPin,
   Globe,
   KeyRound,
   LogOut,
@@ -88,6 +89,7 @@ export default function AdminLayout() {
     {
       heading: 'Operations & Intake',
       items: [
+        { to: '/admin/company-info', label: 'Contact, Map & Info', icon: MapPin },
         { to: '/admin/applications', label: 'Careers & Enquiries', icon: Briefcase },
         { to: '/admin/announcements', label: 'Announcements & Feedback', icon: Megaphone },
         { to: '/admin/activity', label: 'Audit & Activity Logs', icon: Activity },

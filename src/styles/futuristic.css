@@ -583,16 +583,48 @@
 
 /* Cosmic Modals */
 .portal-theme-cosmic .modal-backdrop {
-  background: rgba(3, 1, 9, 0.74);
+  background: rgba(3, 1, 9, 0.78);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .portal-theme-cosmic .modal-card {
-  background: linear-gradient(160deg, rgba(19, 10, 38, 0.96) 0%, rgba(11, 4, 24, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(160deg, rgba(19, 10, 38, 0.97) 0%, rgba(11, 4, 24, 0.99) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12),
-    0 28px 70px rgba(0, 0, 0, 0.8);
+    0 28px 70px rgba(0, 0, 0, 0.85);
   color: hsl(40, 6%, 88%);
+}
+
+/* Sleek Dark Glass Scrollbars in Cosmic Mode */
+.portal-theme-cosmic,
+.portal-theme-cosmic .portal-sidebar,
+.portal-theme-cosmic .modal-backdrop,
+.futuristic-public-shell {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(168, 85, 247, 0.38) rgba(10, 4, 22, 0.6);
+}
+
+.portal-theme-cosmic ::-webkit-scrollbar,
+.futuristic-public-shell ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.portal-theme-cosmic ::-webkit-scrollbar-track,
+.futuristic-public-shell ::-webkit-scrollbar-track {
+  background: rgba(10, 4, 22, 0.65);
+}
+
+.portal-theme-cosmic ::-webkit-scrollbar-thumb,
+.futuristic-public-shell ::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.36);
+  border-radius: 999px;
+}
+
+.portal-theme-cosmic ::-webkit-scrollbar-thumb:hover,
+.futuristic-public-shell ::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.6);
 }
 
 .portal-theme-cosmic code {
@@ -994,11 +1026,10 @@
     padding: 16px 14px 32px;
   }
   .modal-backdrop {
-    padding: 12px;
+    padding: 16px 12px;
   }
   .modal-card {
     padding: 20px 16px;
-    max-height: 92vh;
   }
   .neu-card,
   .neu-card-compact {
